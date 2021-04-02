@@ -1,6 +1,6 @@
 --- 
-title: "YOUR TITLE HERE"
-author: "YOUR NAMES HERE"
+title: "Twitter Visualizer"
+author: "Sam Gabor, Kehao Guo"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
