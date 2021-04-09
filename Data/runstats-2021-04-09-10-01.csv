@@ -1,0 +1,6 @@
+Category,NumTweets,NumSkippedNonMatch,NumSkippedNonEnglish,NumRetries,RunSeconds,TimedOut,Succeeded
+foul,5000,784,135,0,142,FALSE,TRUE
+hard,5000,3003,460,0,9294,FALSE,TRUE
+medical,5000,2210,360,0,12726,FALSE,TRUE
+legal,5000,4327,1541,0,2951,FALSE,TRUE
+astro,5000,3503,2447,0,4276,FALSE,TRUE

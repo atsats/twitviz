@@ -24,7 +24,7 @@
 <meta name="author" content="Sam Gabor, Kehao Guo" />
 
 
-<meta name="date" content="2021-04-02" />
+<meta name="date" content="2021-04-09" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -98,6 +98,336 @@
             <section class="normal" id="section-">
 <div id="data-sources" class="section level1" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Data sources</h1>
+<p>As mentioned in the introduction, our data collector/parser program accepts a stream of tweets and extracts the data of interest into a format that is easier to work with in R. To better understand the parsing context, here is a sample streamed tweet in raw:</p>
+<p><strong>Raw Twitter Stream Output</strong></p>
+<div class="line-block">  {<br />
+   “created_at”: “Fri Apr 09 14:01:50 +0000 2021”,<br />
+   “id”: 1380521336418697218,<br />
+   “id_str”: “1380521336418697218”,<br />
+   “text”: “RT <span class="citation">@alygur</span>: time to share this again to debunk ramadhan/fasting myths!!!!! <a href="https:\/\/t.co\/FJyA2QzR6v" class="uri">https:\/\/t.co\/FJyA2QzR6v</a>”,<br />
+   “source”: “ href="<a href="https:\/\/mobile.twitter.com\" class="uri">https:\/\/mobile.twitter.com\</a>” rel="nofollow" Web App/a",<br />
+   “truncated”: false,<br />
+   “in_reply_to_status_id”: null,<br />
+   “in_reply_to_status_id_str”: null,<br />
+   “in_reply_to_user_id”: null,<br />
+   “in_reply_to_user_id_str”: null,<br />
+   “in_reply_to_screen_name”: null,<br />
+   “user”: {<br />
+       “id”: 1344349183,<br />
+       “id_str”: “1344349183”,<br />
+       “name”: “”,<br />
+       “screen_name”: “amzaranuarr”,<br />
+       “location”: “Sp”,<br />
+       “url”: “<a href="https:\/\/youtu.be\/nTadgJizwlA" class="uri">https:\/\/youtu.be\/nTadgJizwlA</a>”,<br />
+       “description”: “20 . Shinzo wo Sasageyo!”,<br />
+       “translator_type”: “none”,<br />
+       “protected”: false,<br />
+       “verified”: false,<br />
+       “followers_count”: 367,<br />
+       “friends_count”: 588,<br />
+       “listed_count”: 1,<br />
+       “favourites_count”: 14723,<br />
+       “statuses_count”: 13514,<br />
+       “created_at”: “Thu Apr 11 13:02:35 +0000 2013”,<br />
+       “utc_offset”: null,<br />
+       “time_zone”: null,<br />
+       “geo_enabled”: true,<br />
+       “lang”: null,<br />
+       “contributors_enabled”: false,<br />
+       “is_translator”: false,<br />
+       “profile_background_color”: “000000”,<br />
+       “profile_background_image_url”: “<a href="http:\/\/abs.twimg.com\/images\/themes\/theme5\/bg.gif" class="uri">http:\/\/abs.twimg.com\/images\/themes\/theme5\/bg.gif</a>”,<br />
+       “profile_background_image_url_https”: “<a href="https:\/\/abs.twimg.com\/images\/themes\/theme5\/bg.gif" class="uri">https:\/\/abs.twimg.com\/images\/themes\/theme5\/bg.gif</a>”,<br />
+       “profile_background_tile”: false,<br />
+       “profile_link_color”: “7FDBB6”,<br />
+       “profile_sidebar_border_color”: “000000”,<br />
+       “profile_sidebar_fill_color”: “000000”,<br />
+       “profile_text_color”: “000000”,<br />
+       “profile_use_background_image”: false,<br />
+       “profile_image_url”: “<a href="http:\/\/pbs.twimg.com\/profile_images\/1374416579534884864\/KVcZZWsD_normal.jpg" class="uri">http:\/\/pbs.twimg.com\/profile_images\/1374416579534884864\/KVcZZWsD_normal.jpg</a>”,<br />
+       “profile_image_url_https”: “<a href="https:\/\/pbs.twimg.com\/profile_images\/1374416579534884864\/KVcZZWsD_normal.jpg" class="uri">https:\/\/pbs.twimg.com\/profile_images\/1374416579534884864\/KVcZZWsD_normal.jpg</a>”,<br />
+       “profile_banner_url”: “<a href="https:\/\/pbs.twimg.com\/profile_banners\/1344349183\/1616120646" class="uri">https:\/\/pbs.twimg.com\/profile_banners\/1344349183\/1616120646</a>”,<br />
+       “default_profile”: false,<br />
+       “default_profile_image”: false,<br />
+       “following”: null,<br />
+       “follow_request_sent”: null,<br />
+       “notifications”: null<br />
+   },<br />
+   “geo”: null,<br />
+   “coordinates”: null,<br />
+   “place”: null,<br />
+   “contributors”: null,<br />
+   “retweeted_status”: {<br />
+       “created_at”: “Fri Apr 09 05:52:29 +0000 2021”,<br />
+       “id”: 1380398187995820037,<br />
+       “id_str”: “1380398187995820037”,<br />
+       “text”: “time to share this again to debunk ramadhan/fasting myths!!!!! <a href="https:\/\/t.co\/FJyA2QzR6v" class="uri">https:\/\/t.co\/FJyA2QzR6v</a>”,<br />
+       “display_text_range”: [<br />
+           0,<br />
+           62<br />
+       ],<br />
+       “source”: “ href="<a href="http:\/\/twitter.com\/download\/iphone\" class="uri">http:\/\/twitter.com\/download\/iphone\</a>” rel="nofollow" for iPhone/a",<br />
+       “truncated”: false,<br />
+       “in_reply_to_status_id”: null,<br />
+       “in_reply_to_status_id_str”: null,<br />
+       “in_reply_to_user_id”: null,<br />
+       “in_reply_to_user_id_str”: null,<br />
+       “in_reply_to_screen_name”: null,<br />
+       “user”: {<br />
+           “id”: 436607420,<br />
+           “id_str”: “436607420”,<br />
+           “name”: “aly  era”,<br />
+           “screen_name”: “alygur”,<br />
+           “location”: “she/her | 83c83c”,<br />
+           “url”: “<a href="http:\/\/youtube.com\/alygur" class="uri">http:\/\/youtube.com\/alygur</a>”,<br />
+           “description”: “#NNR ONGOING”,<br />
+           “translator_type”: “none”,<br />
+           “protected”: false,<br />
+           “verified”: false,<br />
+           “followers_count”: 9752,<br />
+           “friends_count”: 471,<br />
+           “listed_count”: 11,<br />
+           “favourites_count”: 57466,<br />
+           “statuses_count”: 98848,<br />
+           “created_at”: “Wed Dec 14 10:37:03 +0000 2011”,<br />
+           “utc_offset”: null,<br />
+           “time_zone”: null,<br />
+           “geo_enabled”: true,<br />
+           “lang”: null,<br />
+           “contributors_enabled”: false,<br />
+           “is_translator”: false,<br />
+           “profile_background_color”: “ABB8C2”,<br />
+           “profile_background_image_url”: “<a href="http:\/\/abs.twimg.com\/images\/themes\/theme11\/bg.gif" class="uri">http:\/\/abs.twimg.com\/images\/themes\/theme11\/bg.gif</a>”,<br />
+           “profile_background_image_url_https”: “<a href="https:\/\/abs.twimg.com\/images\/themes\/theme11\/bg.gif" class="uri">https:\/\/abs.twimg.com\/images\/themes\/theme11\/bg.gif</a>”,<br />
+           “profile_background_tile”: true,<br />
+           “profile_link_color”: “F58EA8”,<br />
+           “profile_sidebar_border_color”: “FFFFFF”,<br />
+           “profile_sidebar_fill_color”: “E5507E”,<br />
+           “profile_text_color”: “362720”,<br />
+           “profile_use_background_image”: true,<br />
+           “profile_image_url”: “<a href="http:\/\/pbs.twimg.com\/profile_images\/1380402111377068034\/YamOXy0a_normal.jpg" class="uri">http:\/\/pbs.twimg.com\/profile_images\/1380402111377068034\/YamOXy0a_normal.jpg</a>”,<br />
+           “profile_image_url_https”: “<a href="https:\/\/pbs.twimg.com\/profile_images\/1380402111377068034\/YamOXy0a_normal.jpg" class="uri">https:\/\/pbs.twimg.com\/profile_images\/1380402111377068034\/YamOXy0a_normal.jpg</a>”,<br />
+           “profile_banner_url”: “<a href="https:\/\/pbs.twimg.com\/profile_banners\/436607420\/1608337821" class="uri">https:\/\/pbs.twimg.com\/profile_banners\/436607420\/1608337821</a>”,<br />
+           “default_profile”: false,<br />
+           “default_profile_image”: false,<br />
+           “following”: null,<br />
+           “follow_request_sent”: null,<br />
+           “notifications”: null<br />
+       },<br />
+       “geo”: null,<br />
+       “coordinates”: null,<br />
+       “place”: null,<br />
+       “contributors”: null,<br />
+       “is_quote_status”: false,<br />
+       “quote_count”: 61,<br />
+       “reply_count”: 3,<br />
+       “retweet_count”: 3138,<br />
+       “favorite_count”: 3767,<br />
+       “entities”: {<br />
+           “hashtags”: [],<br />
+           “urls”: [],<br />
+           “user_mentions”: [],<br />
+           “symbols”: [],<br />
+           “media”: [<br />
+               {<br />
+                   “id”: 1380398179217108993,<br />
+                   “id_str”: “1380398179217108993”,<br />
+                   “indices”: [<br />
+                       63,<br />
+                       86<br />
+                   ],<br />
+                   “media_url”: “<a href="http:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg" class="uri">http:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg</a>”,<br />
+                   “media_url_https”: “<a href="https:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg" class="uri">https:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg</a>”,<br />
+                   “url”: “<a href="https:\/\/t.co\/FJyA2QzR6v" class="uri">https:\/\/t.co\/FJyA2QzR6v</a>”,<br />
+                   “display_url”: “pic.twitter.com/FJyA2QzR6v”,<br />
+                   “expanded_url”: “<a href="https:\/\/twitter.com\/alygur\/status\/1380398187995820037\/photo\/1" class="uri">https:\/\/twitter.com\/alygur\/status\/1380398187995820037\/photo\/1</a>”,<br />
+                   “type”: “photo”,<br />
+                   “sizes”: {<br />
+                       “thumb”: {<br />
+                           “w”: 150,<br />
+                           “h”: 150,<br />
+                           “resize”: “crop”<br />
+                       },<br />
+                       “large”: {<br />
+                           “w”: 828,<br />
+                           “h”: 1158,<br />
+                           “resize”: “fit”<br />
+                       },<br />
+                       “medium”: {<br />
+                           “w”: 828,<br />
+                           “h”: 1158,<br />
+                           “resize”: “fit”<br />
+                       },<br />
+                       “small”: {<br />
+                           “w”: 486,<br />
+                           “h”: 680,<br />
+                           “resize”: “fit”<br />
+                       }<br />
+                   }<br />
+               }<br />
+           ]<br />
+       },<br />
+       “extended_entities”: {<br />
+           “media”: [<br />
+               {<br />
+                   “id”: 1380398179217108993,<br />
+                   “id_str”: “1380398179217108993”,<br />
+                   “indices”: [<br />
+                       63,<br />
+                       86<br />
+                   ],<br />
+                   “media_url”: “<a href="http:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg" class="uri">http:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg</a>”,<br />
+                   “media_url_https”: “<a href="https:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg" class="uri">https:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg</a>”,<br />
+                   “url”: “<a href="https:\/\/t.co\/FJyA2QzR6v" class="uri">https:\/\/t.co\/FJyA2QzR6v</a>”,<br />
+                   “display_url”: “pic.twitter.com/FJyA2QzR6v”,<br />
+                   “expanded_url”: “<a href="https:\/\/twitter.com\/alygur\/status\/1380398187995820037\/photo\/1" class="uri">https:\/\/twitter.com\/alygur\/status\/1380398187995820037\/photo\/1</a>”,<br />
+                   “type”: “photo”,<br />
+                   “sizes”: {<br />
+                       “thumb”: {<br />
+                           “w”: 150,<br />
+                           “h”: 150,<br />
+                           “resize”: “crop”<br />
+                       },<br />
+                       “large”: {<br />
+                           “w”: 828,<br />
+                           “h”: 1158,<br />
+                           “resize”: “fit”<br />
+                       },<br />
+                       “medium”: {<br />
+                           “w”: 828,<br />
+                           “h”: 1158,<br />
+                           “resize”: “fit”<br />
+                       },<br />
+                       “small”: {<br />
+                           “w”: 486,<br />
+                           “h”: 680,<br />
+                           “resize”: “fit”<br />
+                       }<br />
+                   }<br />
+               }<br />
+           ]<br />
+       },<br />
+       “favorited”: false,<br />
+       “retweeted”: false,<br />
+       “possibly_sensitive”: false,<br />
+       “filter_level”: “low”,<br />
+       “lang”: “en”<br />
+   },<br />
+   “is_quote_status”: false,<br />
+   “quote_count”: 0,<br />
+   “reply_count”: 0,<br />
+   “retweet_count”: 0,<br />
+   “favorite_count”: 0,<br />
+   “entities”: {<br />
+       “hashtags”: [],<br />
+       “urls”: [],<br />
+       “user_mentions”: [<br />
+           {<br />
+               “screen_name”: “alygur”,<br />
+               “name”: “aly  era”,<br />
+               “id”: 436607420,<br />
+               “id_str”: “436607420”,<br />
+               “indices”: [<br />
+                   3,<br />
+                   10<br />
+               ]<br />
+           }<br />
+       ],<br />
+       “symbols”: [],<br />
+       “media”: [<br />
+           {<br />
+               “id”: 1380398179217108993,<br />
+               “id_str”: “1380398179217108993”,<br />
+               “indices”: [<br />
+                   75,<br />
+                   98<br />
+               ],<br />
+               “media_url”: “<a href="http:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg" class="uri">http:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg</a>”,<br />
+               “media_url_https”: “<a href="https:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg" class="uri">https:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg</a>”,<br />
+               “url”: “<a href="https:\/\/t.co\/FJyA2QzR6v" class="uri">https:\/\/t.co\/FJyA2QzR6v</a>”,<br />
+               “display_url”: “pic.twitter.com/FJyA2QzR6v”,<br />
+               “expanded_url”: “<a href="https:\/\/twitter.com\/alygur\/status\/1380398187995820037\/photo\/1" class="uri">https:\/\/twitter.com\/alygur\/status\/1380398187995820037\/photo\/1</a>”,<br />
+               “type”: “photo”,<br />
+               “sizes”: {<br />
+                   “thumb”: {<br />
+                       “w”: 150,<br />
+                       “h”: 150,<br />
+                       “resize”: “crop”<br />
+                   },<br />
+                   “large”: {<br />
+                       “w”: 828,<br />
+                       “h”: 1158,<br />
+                       “resize”: “fit”<br />
+                   },<br />
+                   “medium”: {<br />
+                       “w”: 828,<br />
+                       “h”: 1158,<br />
+                       “resize”: “fit”<br />
+                   },<br />
+                   “small”: {<br />
+                       “w”: 486,<br />
+                       “h”: 680,<br />
+                       “resize”: “fit”<br />
+                   }<br />
+               },<br />
+               “source_status_id”: 1380398187995820037,<br />
+               “source_status_id_str”: “1380398187995820037”,<br />
+               “source_user_id”: 436607420,<br />
+               “source_user_id_str”: “436607420”<br />
+           }<br />
+       ]<br />
+   },<br />
+   “extended_entities”: {<br />
+       “media”: [<br />
+           {<br />
+               “id”: 1380398179217108993,<br />
+               “id_str”: “1380398179217108993”,<br />
+               “indices”: [<br />
+                   75,<br />
+                   98<br />
+               ],<br />
+               “media_url”: “<a href="http:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg" class="uri">http:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg</a>”,<br />
+               “media_url_https”: “<a href="https:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg" class="uri">https:\/\/pbs.twimg.com\/media\/Eygo1JDU8AEPKUU.jpg</a>”,<br />
+               “url”: “<a href="https:\/\/t.co\/FJyA2QzR6v" class="uri">https:\/\/t.co\/FJyA2QzR6v</a>”,<br />
+               “display_url”: “pic.twitter.com/FJyA2QzR6v”,<br />
+               “expanded_url”: “<a href="https:\/\/twitter.com\/alygur\/status\/1380398187995820037\/photo\/1" class="uri">https:\/\/twitter.com\/alygur\/status\/1380398187995820037\/photo\/1</a>”,<br />
+               “type”: “photo”,<br />
+               “sizes”: {<br />
+                   “thumb”: {<br />
+                       “w”: 150,<br />
+                       “h”: 150,<br />
+                       “resize”: “crop”<br />
+                   },<br />
+                   “large”: {<br />
+                       “w”: 828,<br />
+                       “h”: 1158,<br />
+                       “resize”: “fit”<br />
+                   },<br />
+                   “medium”: {<br />
+                       “w”: 828,<br />
+                       “h”: 1158,<br />
+                       “resize”: “fit”<br />
+                   },<br />
+                   “small”: {<br />
+                       “w”: 486,<br />
+                       “h”: 680,<br />
+                       “resize”: “fit”<br />
+                   }<br />
+               },<br />
+               “source_status_id”: 1380398187995820037,<br />
+               “source_status_id_str”: “1380398187995820037”,<br />
+               “source_user_id”: 436607420,<br />
+               “source_user_id_str”: “436607420”<br />
+           }<br />
+       ]<br />
+   },<br />
+   “favorited”: false,<br />
+   “retweeted”: false,<br />
+   “possibly_sensitive”: false,<br />
+   “filter_level”: “low”,<br />
+   “lang”: “en”,<br />
+   “timestamp_ms”: “1617976910105”<br />
+  }</div>
 
 </div>
             </section>
@@ -137,7 +467,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/edit/main/02-data.Rmd",
+"link": "https://github.com/atsats/twitviz/edit/main/02-data.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -145,7 +475,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/blob/main/02-data.Rmd",
+"link": "https://github.com/atsats/twitviz/blob/main/02-data.Rmd",
 "text": null
 },
 "download": null,
