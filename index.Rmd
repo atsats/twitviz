@@ -5,5 +5,75 @@ date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 ---
 
+```{r requiredlibs, message=FALSE, echo=FALSE}
+#Load necessary libraries
+require(tidyverse)
+require(ggthemes)
+require(forcats)
+require(jsonlite)
+
+```
+
 # Introduction
+
+Twitter is an accessible online source of people's thoughts and interactions. The question we set out to anser is the following:
+
+-**Does the usage of certain tweet words indicate a typical type of Twitter user?**
+
+For example, do users who use foul language in tweets tend to be low-quality? Or, do users who employ a harder or specialized vocabulary in tweets tend to be of higher-quality. "Quality" here is defined as follows:
+
+1) Verified (verified is better due to stringent criteria by Twitter)
+2) Following/Follower ratio (lower is better)
+3) Account Creation Date (earlier is better)
+4) Profile Picture (non-default is better)
+5) Favorites Count (lower is usually better)
+
+Using the above criteria, we set out to explore data from Twitter using filtered real-time streams (see: [Twitter API Doc](https://developer.twitter.com/en/docs/twitter-api/v1/tweets/filter-realtime/api-reference/post-statuses-filter). Filtered streams allow an application developer to filter real-time tweets based on the presence of one or more selected words. 
+
+To collect tweets of interest, we constructed the five word lists below:
+
+1) *Foul* (a list of "foul" words typically not typically used in polite company)
+2) *Legal* (a list of words used in the legal industry, e.g. "verdict")
+3) *Astro* (a list of words in the astrophysics/scientific community, e.g. "asteroid")
+4) *Hard* (a list of vocabulary words that are usually used by people with a higher level of education, e.g. "obstreperous")
+5) *Medical* (a list of words in the medical establishment, e.g. "intravenous")
+
+To collect the streamed data, a special data collector/parser program was developed in C# and .NET. This program allowed us to do the following:
+
+1) Collect data on each word list in threaded fashion, i.e. the data collection was run in parallel using multiple threads and multiple Twitter credentials. This was important as capturing a desired number of tweets for each word lists varied greatly in run times.
+2) Retry on the many Twitter API disconnects that are expected in the course of development.
+3) Filter out the many false positive matches delivered by the stream API (for example, on non-English tweet matches)
+4) Parse data into JSON format in preparation for importing into an R tibble.
+
+```{r}
+sample_run_stats <- read_csv("data/runstats-2021-04-09-10-01.csv")
+sample_run_stats %>% mutate(RunTimeInMinutes = round(RunSeconds/60,0)) %>% 
+    mutate(Category = fct_reorder(Category, RunTimeInMinutes)) %>% 
+    arrange(RunTimeInMinutes) %>% 
+    ggplot() + geom_bar(aes(x=Category,y=RunTimeInMinutes),fill="cadetblue3",color="black", stat="identity") +
+    xlab("Category") + ylab("Run Time (Minutes)") +
+    ggtitle("Time (in minutes) to find 5,000 Matching Word Tweets") +
+    theme_economist()
+    
+```
+
+
+It should be noted that we initially attempted to do this data collection through two R packages (`rtweet` and `twitteR`) but these were useful for simple testing only, not larger scale data collection tasks with retries.
+
+Our program, [TwitDownloader](https://github.com/atsats/TwitDownloader) relied on a very powerful .NET library that wraps the Twitter API (see: [tweetinvi](https://github.com/linvi/tweetinvi) and specifically: [Filtered Streams](https://linvi.github.io/tweetinvi/dist/streams-v1.1/filtered-stream.html))
+
+A sample output session from `TwitDownloader` trying to capture 5,000 tweets in each category is shown below:
+
+3 available Twitter credentials will be cycled through.  
+foul.txt 5000 received,784 non-match,135 non-English  
+legal.txt 5000 received,4327 non-match,1541 non-English  
+astro.txt 5000 received,3503 non-match,2447 non-English  
+hard.txt 5000 received,3003 non-match,460 non-English  
+medical.txt 5000 received,2210 non-match,360 non-English  
+All threads exited.  
+Captured 5000 for foul.txt in 142 seconds  
+Captured 5000 for hard.txt in 9294 seconds  
+Captured 5000 for medical.txt in 12726 seconds  
+Captured 5000 for legal.txt in 2951 seconds  
+Captured 5000 for astro.txt in 4276 seconds
 

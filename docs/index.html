@@ -24,7 +24,7 @@
 <meta name="author" content="Sam Gabor, Kehao Guo" />
 
 
-<meta name="date" content="2021-04-02" />
+<meta name="date" content="2021-04-09" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -99,10 +99,52 @@
 <div id="header">
 <h1 class="title">Twitter Visualizer</h1>
 <p class="author"><em>Sam Gabor, Kehao Guo</em></p>
-<p class="date"><em>2021-04-02</em></p>
+<p class="date"><em>2021-04-09</em></p>
 </div>
 <div id="introduction" class="section level1" number="1">
 <h1><span class="header-section-number">Chapter 1</span> Introduction</h1>
+<p>Twitter is an accessible online source of people’s thoughts and interactions. The question we set out to anser is the following:</p>
+<p>-<strong>Does the usage of certain tweet words indicate a typical type of Twitter user?</strong></p>
+<p>For example, do users who use foul language in tweets tend to be low-quality? Or, do users who employ a harder or specialized vocabulary in tweets tend to be of higher-quality. “Quality” here is defined as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Verified (verified is better due to stringent criteria by Twitter)</li>
+<li>Following/Follower ratio (lower is better)</li>
+<li>Account Creation Date (earlier is better)</li>
+<li>Profile Picture (non-default is better)</li>
+<li>Favorites Count (lower is usually better)</li>
+</ol>
+<p>Using the above criteria, we set out to explore data from Twitter using filtered real-time streams (see: <a href="https://developer.twitter.com/en/docs/twitter-api/v1/tweets/filter-realtime/api-reference/post-statuses-filter">Twitter API Doc</a>. Filtered streams allow an application developer to filter real-time tweets based on the presence of one or more selected words.</p>
+<p>To collect tweets of interest, we constructed the five word lists below:</p>
+<ol style="list-style-type: decimal">
+<li><em>Foul</em> (a list of “foul” words typically not typically used in polite company)</li>
+<li><em>Legal</em> (a list of words used in the legal industry, e.g. “verdict”)</li>
+<li><em>Astro</em> (a list of words in the astrophysics/scientific community, e.g. “asteroid”)</li>
+<li><em>Hard</em> (a list of vocabulary words that are usually used by people with a higher level of education, e.g. “obstreperous”)</li>
+<li><em>Medical</em> (a list of words in the medical establishment, e.g. “intravenous”)</li>
+</ol>
+<p>To collect the streamed data, a special data collector/parser program was developed in C# and .NET. This program allowed us to do the following:</p>
+<ol style="list-style-type: decimal">
+<li>Collect data on each word list in threaded fashion, i.e. the data collection was run in parallel using multiple threads and multiple Twitter credentials. This was important as capturing a desired number of tweets for each word lists varied greatly in run times.</li>
+<li>Retry on the many Twitter API disconnects that are expected in the course of development.</li>
+<li>Filter out the many false positive matches delivered by the stream API (for example, on non-English tweet matches)</li>
+<li>Parse data into JSON format in preparation for importing into an R tibble.</li>
+</ol>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>It should be noted that we initially attempted to do this data collection through two R packages (<code>rtweet</code> and <code>twitteR</code>) but these were useful for simple testing only, not larger scale data collection tasks with retries.</p>
+<p>Our program, <a href="https://github.com/atsats/TwitDownloader">TwitDownloader</a> relied on a very powerful .NET library that wraps the Twitter API (see: <a href="https://github.com/linvi/tweetinvi">tweetinvi</a> and specifically: <a href="https://linvi.github.io/tweetinvi/dist/streams-v1.1/filtered-stream.html">Filtered Streams</a>)</p>
+<p>A sample output session from <code>TwitDownloader</code> trying to capture 5,000 tweets in each category is shown below:</p>
+<p>3 available Twitter credentials will be cycled through.<br />
+foul.txt 5000 received,784 non-match,135 non-English<br />
+legal.txt 5000 received,4327 non-match,1541 non-English<br />
+astro.txt 5000 received,3503 non-match,2447 non-English<br />
+hard.txt 5000 received,3003 non-match,460 non-English<br />
+medical.txt 5000 received,2210 non-match,360 non-English<br />
+All threads exited.<br />
+Captured 5000 for foul.txt in 142 seconds<br />
+Captured 5000 for hard.txt in 9294 seconds<br />
+Captured 5000 for medical.txt in 12726 seconds<br />
+Captured 5000 for legal.txt in 2951 seconds<br />
+Captured 5000 for astro.txt in 4276 seconds</p>
 
 </div>
             </section>
@@ -142,7 +184,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/edit/main/index.Rmd",
+"link": "https://github.com/atsats/twitviz/edit/main/index.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -150,7 +192,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/blob/main/index.Rmd",
+"link": "https://github.com/atsats/twitviz/blob/main/index.Rmd",
 "text": null
 },
 "download": null,

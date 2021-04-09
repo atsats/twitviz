@@ -24,7 +24,7 @@
 <meta name="author" content="Sam Gabor, Kehao Guo" />
 
 
-<meta name="date" content="2021-04-02" />
+<meta name="date" content="2021-04-09" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -98,6 +98,68 @@
             <section class="normal" id="section-">
 <div id="data-transformation" class="section level1" number="3">
 <h1><span class="header-section-number">Chapter 3</span> Data transformation</h1>
+<p>To aid in the exploratory process, our parser produces the below format for each matching streamed record received. In the below, fields beginning with <code>Tweet</code> pertain to the user who tweeted and fields beginnning with <code>ReTweet</code> pertain to the user being re-tweeted. Most fields are exactly as they were transmitted by Twitter, but we created a number of value added fields such as <code>TweetUserFollowRatio</code> which gives the ratio of <code>TweetUserNumFollowing/TweetUserNumFollowers</code> a measure of the importance of the user. When the number of followers is high and this ratio is much less than 1, it usually indicates a user who is a Twitter influencer. Another field of interest is <code>TweetUserDaysOn</code> which measures the number of days since account creation for the user; larger values indicate an account that has been around longer, a positive indicator. Similar fields exist for the ReTweet user when applicable.</p>
+<p><strong>Simplified Parser Output</strong></p>
+<div class="line-block">  {<br />
+   “Category”: “hard”,<br />
+   “NumMatchWords”: 1,<br />
+   “MatchWords”: “debunk”,<br />
+   “TweetUserScreenName”: “amzaranuarr”,<br />
+   “TweetUserDaysOn”: 2920,<br />
+   “TweetUserNumFollowers”: 367,<br />
+   “TweetUserNumFollowing”: 588,<br />
+   “TweetUserFollowRatio”: 1.60218,<br />
+   “TweetUserNumTweets”: 13514,<br />
+   “TweetUserNumFavorites”: 14723,<br />
+   “TweetUserVerified”: false,<br />
+   “TweetUserProtected”: false,<br />
+   “TweetUserDefaultProfilePic”: false,<br />
+   “TweetNumQuoted”: 0,<br />
+   “TweetNumReplied”: 0,<br />
+   “TweetNumFavorite”: 0,<br />
+   “TweetNumRetweet”: 0,<br />
+   “IsRetweet”: true,<br />
+   “NumMedia”: 1,<br />
+   “NumUrls”: 0,<br />
+   “NumHashtags”: 0,<br />
+   “NumContributors”: null,<br />
+   “NumUserMentions”: 1,<br />
+   “NumSymbols”: 0,<br />
+   “PossiblySensitive”: false,<br />
+   “Source”: “WebApp”,<br />
+   “SourceUrl”: null,<br />
+   “Place”: null,<br />
+   “Longitude”: null,<br />
+   “Latitude”: null,<br />
+   “TweetId”: “1380521336418697218”,<br />
+   “TweetCreatedAt”: “2021-04-09T14:01:50+00:00”,<br />
+   “ReTweetUserScreenName”: “alygur”,<br />
+   “ReTweetUserDaysOn”: 3404,<br />
+   “ReTweetUserNumFollowers”: 9752,<br />
+   “ReTweetUserNumFollowing”: 471,<br />
+   “ReTweetUserFollowRatio”: 0.04830,<br />
+   “ReTweetUserNumTweets”: 98848,<br />
+   “ReTweetUserNumFavorites”: 57466,<br />
+   “ReTweetNumQuoted”: 61,<br />
+   “ReTweetNumReplied”: 3,<br />
+   “ReTweetNumFavorite”: 3767,<br />
+   “ReTweetNumRetweet”: 3138,<br />
+   “ReTweetUserVerified”: false,<br />
+   “ReTweetUserProtected”: false,<br />
+   “ReTweetUserDefaultProfilePic”: false,<br />
+   “Lang”: “en”,<br />
+   “TweetText”: “RT <span class="citation">@alygur</span>: time to share this again to debunk ramadhan/fasting myths!!!!! <a href="https://t.co/FJyA2QzR6v" class="uri">https://t.co/FJyA2QzR6v</a>”,<br />
+   “ReTweetText”: “time to share this again to debunk ramadhan/fasting myths!!!!! <a href="https://t.co/FJyA2QzR6v" class="uri">https://t.co/FJyA2QzR6v</a>”<br />
+  }</div>
+<p>Our downloader/parser captured 60,864 tweets (12,200 in each category, except <code>medical</code> which has 12,064 tweets due to an aborted run). The data capture took approximately 12 hours of run time, mostly due to the difficult to capture categories, such as <code>medical</code>.</p>
+<pre><code>## # A tibble: 5 x 2
+##   Category     n
+## * &lt;chr&gt;    &lt;int&gt;
+## 1 astro    12200
+## 2 foul     12200
+## 3 hard     12200
+## 4 legal    12200
+## 5 medical  12064</code></pre>
 
 </div>
             </section>
@@ -137,7 +199,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/edit/main/03-cleaning.Rmd",
+"link": "https://github.com/atsats/twitviz/edit/main/03-cleaning.Rmd",
 "text": "Edit"
 },
 "history": {
@@ -145,7 +207,7 @@ gitbook.start({
 "text": null
 },
 "view": {
-"link": "https://github.com/YOUR GITHUB USERNAME/YOUR REPO NAME/blob/main/03-cleaning.Rmd",
+"link": "https://github.com/atsats/twitviz/blob/main/03-cleaning.Rmd",
 "text": null
 },
 "download": null,
