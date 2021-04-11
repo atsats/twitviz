@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    /* special style to hide nodes */
+    .hidden {
+      display: none;
+    }
+
+    .node circle {
+      fill: #fff;
+      stroke: steelblue;
+      stroke-width: 3px;
+    }
+
+    /* .node text {
+      font: 12px sans-serif;
+      width: 40px;
+      text-overflow: ellipsis;
+      text-align: center;
+    } */
+
+    .link {
+      fill: none;
+      stroke: #ccc;
+      stroke-width: 2px;
+    }
+  </style>
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+    integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+    crossorigin="anonymous"
+  />
+</head>
+
+<body>
+<!-- Modal -->
+  <!-- Modal -->
+  <div class="modal fade" id="recap" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">Game Recap</h4>          
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <p class="text-primary">Congratulations you finished the game!</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+  <div class="container">
+    <h1 class="jumbotron">Tweet Trivia Game</h1>
+    <h4>Can you answer the 10 questions correctly on the 60,864 captured tweets?</h1>    
+    <h6>Simple Rules:</h6>
+    <ol>
+      <li>
+        Reminder: 60,864 streamed tweets were captured based on 5 word categories, FOUL (bad words),ASTRO (astrophysics terms),MEDICAL (medical terms),HARD (difficult words),LEGAL (legal terms).
+      </li>      
+      <li>
+        Answer questions by clicking on a question then on one of the displayed
+        choices.
+      </li>
+      <li>
+        Clicking on an incorrect choice makes it disappear and you lose 100
+        points.
+      </li>
+      <li>
+        Clicking on an correct choice makes all incorrect choices disappear, displays more answer information  and
+        you gain 200 points. 
+      </li>
+      <li>
+        For better visibility, collapse answered questions by clicking on the
+        question node.
+      </li>
+      <li>
+        The max score is 2,000 points (answering every question correctly with no wrong answers). You can restart the game anytime by pressing the restart button.
+      </li>
+    </ol>
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-delay="10000" style="position: relative; top: 1rem; right: 1rem;">
+      <div class="toast-header">
+    
+        <strong class="mr-auto">More Details</strong>
+        <small></small>
+        <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div id="message" class="toast-body">
+     </div>
+    </div>
+  <div class="row">
+  <div class="col-2">Total Score</div>
+  <div id="score" class="col-1 text-primary">0</div>  
+  <div class="col-2">Correct Score</div>  
+  <div id="correct" class="col-1 text-success">0</div>    
+  <div class="col-2">Incorrect Score</div>    
+  <div id="incorrect" class="col-1 text-danger">0</div>    
+  <div id="btnrestart" class="col-2 btn btn-warning">Restart Game</div>      
+</div>  
+  <!-- load jquery-->
+  <script
+    src="https://code.jquery.com/jquery-3.6.0.slim.min.js"
+    integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI="
+    crossorigin="anonymous"
+  ></script>
+  <!--Load Bootstrap JS-->
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <!-- load the d3.js library -->
+  <script src="https://d3js.org/d3.v6.min.js"></script>
+  <script>
+    // Set the dimensions and margins of the diagram
+    var margin = { top: 20, right: 90, bottom: 30, left: 200 },
+      width = 960 - margin.left - margin.right,
+      height = 800 - margin.top - margin.bottom;
+
+    // global variables
+    var treeData,
+      treemap,
+      duration = 750,
+      root,
+      svg,
+      i,
+      score,
+      correct,
+      incorrect,
+      numquestions = 10, 
+      numanswered;
+
+      $(document).ready(function() {
+        Init(false);
+        $("#btnrestart").click(function() {
+          Init(true);
+        });        
+      });
+
+  
+
+
+    function Init(removeSvg) {
+      i = 0;
+      score = 0;
+      correct = 0;
+      incorrect = 0;
+      numanswered = 0;
+      if (removeSvg) {
+        d3.selectAll('svg').remove();
+        $("#score").text(score);
+        $("#correct").text(correct);        
+        $("#incorrect").text(incorrect);                
+      }
+    // fetch json file with questions
+    d3.json("questions.json").then(function (d) {
+      //console.log("got data:" + JSON.stringify(d));
+      treeData = d;
+      InitTree();
+    });
+    }
+    function InitTree() {
+      // append the svg object to the body of the page
+      // appends a 'group' element to 'svg'
+      // moves the 'group' element to the top left margin
+      svg = d3
+        .select("body")
+        .append("svg")
+        .attr("width", width + margin.right + margin.left)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      // declares a tree layout and assigns the size
+      treemap = d3.tree().size([height, width]);
+
+      // Assigns parent, children, height, depth
+      root = d3.hierarchy(treeData, function (d) {
+        return d.children;
+      });
+      root.x0 = height / 2;
+      root.y0 = 0;
+
+      // Collapse after the second level
+      root.children.forEach(collapse);
+
+      update(root);
+    }
+
+    // Collapse the node and all it's children
+    function collapse(d) {
+      if (d.children) {
+        d._children = d.children;
+        d._children.forEach(collapse);
+        d.children = null;
+      }
+    }
+
+    function update(source) {
+      // Assigns the x and y position for the nodes
+      var treeData = treemap(root);
+
+      // Compute the new tree layout.
+      var nodes = treeData.descendants(),
+        links = treeData.descendants().slice(1);
+
+      // Normalize for fixed-depth.
+      nodes.forEach(function (d) {
+        d.y = d.depth * 180;
+      });
+
+      // ****************** Nodes section ***************************
+
+      // Update the nodes...
+      var node = svg.selectAll("g.node").data(nodes, function (d) {
+        return d.id || (d.id = ++i);
+      });
+
+      // Enter any new modes at the parent's previous position.
+      var nodeEnter = node
+        .enter()
+        .append("g")
+        //.attr('class', 'node')
+        .attr("class", function (d) {
+          //debugger;
+          return d.data.hidden ? "hidden" : "node";
+        })
+        .attr("transform", function (d) {
+          return "translate(" + source.y0 + "," + source.x0 + ")";
+        })
+        .on("click", click);
+
+      // Add Circle for the nodes
+      nodeEnter
+        .append("circle")
+        .attr("class", "node")
+        .attr("r", 1e-6)
+        .style("fill", function (d) {
+          return d._children ? "lightsteelblue" : "#fff";
+        });
+
+      // Add labels for the nodes
+      nodeEnter
+        .append("text")
+        .attr("class", "text-primary")
+        .attr("dy", ".35em")
+        .attr("x", function (d) {
+          return d.children || d._children ? -13 : 13;
+        })
+        .attr("text-anchor", function (d) {
+          return d.children || d._children ? "end" : "start";
+        })
+        .text(function (d) {
+          return d.data.name;
+        });
+
+      // UPDATE
+      var nodeUpdate = nodeEnter.merge(node);
+
+      // Transition to the proper position for the node
+      nodeUpdate
+        .transition()
+        .duration(duration)
+        .attr("transform", function (d) {
+          return "translate(" + d.y + "," + d.x + ")";
+        });
+
+      // Update the node attributes and style
+      nodeUpdate
+        .select("circle.node")
+        .attr("class", function (d) {
+          //debugger;
+          return d.data.hidden ? "hidden" : "node";
+        })
+        .attr("r", 10)
+        .style("fill", function (d) {
+          return d._children ? "lightsteelblue" : "#fff";
+        })
+        .attr("cursor", "pointer");
+
+      nodeUpdate.select("text").attr("class", function (d) {
+        //debugger;
+        return d.data.hidden ? "hidden" : "node";
+      });
+
+      // Remove any exiting nodes
+      var nodeExit = node
+        .exit()
+        .transition()
+        .duration(duration)
+        .attr("transform", function (d) {
+          return "translate(" + source.y + "," + source.x + ")";
+        })
+        .remove();
+
+      // On exit reduce the node circles size to 0
+      nodeExit.select("circle").attr("r", 1e-6);
+
+      // On exit reduce the opacity of text labels
+      nodeExit.select("text").style("fill-opacity", 1e-6);
+
+      // ****************** links section ***************************
+
+      // Update the links...
+      var link = svg.selectAll("path.link").data(links, function (d) {
+        return d.id;
+      });
+
+      // Enter any new links at the parent's previous position.
+      var linkEnter = link
+        .enter()
+        .insert("path", "g")
+        //.attr("class", "link")
+        .attr("class", function (d) {
+          //debugger;
+          //return d.parent.data.hidden ? "hidden" : "link";
+          return d.data.hidden ? "hidden" : "link";
+        })
+        .attr("d", function (d) {
+          var o = { x: source.x0, y: source.y0 };
+          return diagonal(o, o);
+        });
+
+      // UPDATE
+      var linkUpdate = linkEnter.merge(link);
+
+      // Transition back to the parent element position
+      linkUpdate
+        .attr("class", function (d) {
+          //debugger;
+          return d.data.hidden ? "hidden" : "link";
+        })
+        .transition()
+        .duration(duration)
+        .attr("d", function (d) {
+          return diagonal(d, d.parent);
+        });
+
+      // Remove any exiting links
+      var linkExit = link
+        .exit()
+        .transition()
+        .duration(duration)
+        .attr("d", function (d) {
+          var o = { x: source.x, y: source.y };
+          return diagonal(o, o);
+        })
+        .remove();
+
+      // Store the old positions for transition.
+      nodes.forEach(function (d) {
+        d.x0 = d.x;
+        d.y0 = d.y;
+      });
+
+      // Creates a curved (diagonal) path from parent to the child nodes
+      function diagonal(s, d) {
+        path = `M ${s.y} ${s.x}
+            C ${(s.y + d.y) / 2} ${s.x},
+              ${(s.y + d.y) / 2} ${d.x},
+              ${d.y} ${d.x}`;
+
+        return path;
+      }
+
+      // Toggle children on click.
+      function click(event, d) {
+        if (d.children) {
+          d._children = d.children;
+          d.children = null;
+        } else {
+          d.children = d._children;
+          d._children = null;
+        }
+        if (!d.data.answered) {
+          // add up the score only for non answered
+          // questions
+          score += d.data.points;
+          $("#score").text(score);
+          if (d.data.correct !== true) {
+            // hide incorrect answers
+            incorrect += d.data.points;
+            d.data.hidden = true;
+            //console.log("Wrong: " + score);
+            $("#incorrect").text(incorrect);
+          } else {
+            if (d.data.points > 0) {
+              correct += d.data.points;
+              d.data.answered = true;
+              //console.log("Correct: " + score);
+              $("#message").text(d.data.moreinfo);              
+              $('.toast').toast('show');              
+              $("#correct").text(correct);
+              var siblings = d.parent.children;
+              for (var j = 0; j < siblings.length; j++) {
+                if (!siblings[j].data.correct) {
+                  //debugger;
+                  siblings[j].data.hidden = true;
+                  update(siblings[j]);
+                }
+              }
+              numanswered++;
+              if (numanswered == numquestions) {
+                $('#myModal').modal('show');
+              }
+            }
+          }
+        }
+
+        update(d);
+      }
+    }
+  </script>
+</body>

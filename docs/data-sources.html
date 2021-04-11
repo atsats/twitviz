@@ -24,7 +24,7 @@
 <meta name="author" content="Sam Gabor, Kehao Guo" />
 
 
-<meta name="date" content="2021-04-09" />
+<meta name="date" content="2021-04-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -98,7 +98,7 @@
             <section class="normal" id="section-">
 <div id="data-sources" class="section level1" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Data sources</h1>
-<p>As mentioned in the introduction, our data collector/parser program accepts a stream of tweets and extracts the data of interest into a format that is easier to work with in R. To better understand the parsing context, here is a sample streamed tweet in raw:</p>
+<p>As mentioned in the introduction, our data collector/parser program accepts a stream of tweets and extracts the data of interest into a format that is easier to work with in R. Below is a raw streamed tweet as it comes from Twitter. Note that it includes both the user who tweeted and the information on the original tweet that may have been rewteeted. In addition, the information on both users (e.g. follower count, verification status, etc.) is contained in the message: The tweeting user and the user being retweeted.</p>
 <p><strong>Raw Twitter Stream Output</strong></p>
 <div class="line-block">  {<br />
    “created_at”: “Fri Apr 09 14:01:50 +0000 2021”,<br />
