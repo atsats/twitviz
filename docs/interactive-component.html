@@ -24,7 +24,7 @@
 <meta name="author" content="Sam Gabor, Kehao Guo" />
 
 
-<meta name="date" content="2021-04-09" />
+<meta name="date" content="2021-04-11" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -98,6 +98,16 @@
             <section class="normal" id="section-">
 <div id="interactive-component" class="section level1" number="6">
 <h1><span class="header-section-number">Chapter 6</span> Interactive component</h1>
+<p>The D3 interactive component that we chose to build is a trivia game that asks various questions about the collected tweet data. Players get points for answering correctly and lose points for answering incorrectly. At any time, the game can be reset to its beginning state.</p>
+<p>The game is based on <a href="https://gist.github.com/d3noob/9de0768412ac2ce5dbec430bb1370efe">Mike Bostok’s Collapsible Tree Example</a> with substantial functionality added to give the user feedback on questions answered correctly or incorrectly. A running score tally is displayed and the user can reset the game play at any time.</p>
+<p>The question tree diagram is built by reading a JSON file server from a web site. The game is hosted on a web server and displayed in an IFRAME.</p>
+<iframe src="https://advanced-trading.com/edav/TwitVizTrivia.html" width="1000" height="900">
+</iframe>
+<p>For reference, here are all the questions and answers in one image:</p>
+<div class="figure">
+<img src="D3GameScreen.png" alt="" />
+<p class="caption">TwitVizTrivia Screen</p>
+</div>
 
 </div>
             </section>

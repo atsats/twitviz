@@ -1,0 +1,458 @@
+{
+    "name": "",
+    "correct": true,
+    "hidden": false,
+    "points": 0,
+    "children": [
+        {
+            "name": "Q1: Most Popular Tweet Device?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "Android",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "Mac",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "Web",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "iPhone",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "The iPhone was the source of 23,695 tweets. Android, the second most popular device was used 16,971 times."
+                },
+                {
+                    "name": "Bot",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                }
+            ]
+        },
+        {
+            "name": "Q2: Number of Tweets with Geo Coordinates?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "40,321",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "25,205",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "10,353",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "108",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "Suprisingly, only 108 tweets had geo coordinates, while 60,756 did not."
+                },
+                {
+                    "name": "9,037",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                }
+            ]
+        },
+        {
+            "name": "Q3: Most common FOUL word?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "s--t",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "s--t was occurred 4,269 times, the next closest word f--k had a frequency of 3,936."
+                },
+                {
+                    "name": "f--k",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "b--h",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "a--h--e",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "p--s",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                }
+            ]
+        },
+        {
+            "name": "Q4: Most common HARD word?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "debacle",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "maverick",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "egregious",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "Egregious occurred 2,173 times beating out maverick with 1,667 occurrences at # 2."
+                },
+                {
+                    "name": "debunk",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "paradigm",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                }
+            ]
+        },
+        {
+            "name": "Q5: Most common MEDICAL word?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "acute",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "hypertension",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "benign",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "chronic",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "Chronic occurred 2,964 times followed by acute at 2,451."
+                },
+                {
+                    "name": "fracture",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                }
+            ]
+        },
+        {
+            "name": "Q6: Most verified users?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "hard",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "foul",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "astro",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "legal",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "There were 341 verified tweeters in the LEGAL category. Next closest was MEDICAL with 261 users. Not surprisingly, FOUL had only 17 verified users."
+                },
+                {
+                    "name": "medical",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                }
+            ]
+        },
+        {
+            "name": "Q7: Longest User On Twitter?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "hard",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "foul",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "legal",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "astro",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "The longest time an account was created on Twitter was in the ASTRO category, at 5,381 days or 14 years. Surprisingly, there was little variation on this max figure between the categories. FOUL, for example, had the least with 5,142 days."
+                },
+                {
+                    "name": "medical",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                }
+            ]
+        },
+        {
+            "name": "Q8: Number of Unique Users in 60,864 tweets?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "30,751",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "47,201",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "21,654",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "10,432",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "54,589",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "There's a suurprisingly high number of unique users in the streamed sample. Some users tweeted as many as 154 times, but most tweeted once."
+                }
+            ]
+        },
+        {
+            "name": "Q9: How many retweets in 60,864 tweets?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "32,568",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "32,568 tweets or about 54% of the 60,864 captured records were in response to another tweet."
+                },
+                {
+                    "name": "7,019",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "19,147",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "33,071",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "5,189",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                }
+            ]
+        },
+        {
+            "name": "Q10: Highest aggregate follower count?",
+            "correct": true,
+            "hidden": false,
+            "points": 0,
+            "answered": false,
+            "children": [
+                {
+                    "name": "astro",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "hard",
+                    "hidden": false,
+                    "correct": true,
+                    "points": 200,
+                    "answered": false,
+                    "moreinfo": "Tweeters using sophisticated words (HARD category) had an aggregate follower count of 182,319,500, while the next closest category was LEGAL at 127,939,826. Not surprisingly, the lowest category was FOUL with 39,622,537."
+                },
+                {
+                    "name": "foul",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "legal",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                },
+                {
+                    "name": "medical",
+                    "hidden": false,
+                    "correct": false,
+                    "points": -100,
+                    "answered": false
+                }
+            ]
+        }
+    ]
+}
