@@ -22,9 +22,7 @@
   
 
 <meta name="author" content="Sam Gabor, Kehao Guo" />
-
-
-<meta name="date" content="2021-04-11" />
+<meta name="date" content="2021-04-12" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,7 +31,7 @@
   
 <link rel="prev" href="missing-values.html"/>
 <link rel="next" href="interactive-component.html"/>
-<script src="libs/header-attrs-2.6/header-attrs.js"></script>
+<script src="libs/header-attrs-2.7/header-attrs.js"></script>
 <script src="libs/jquery-2.2.3/jquery.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
 <link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
@@ -98,6 +96,31 @@
             <section class="normal" id="section-">
 <div id="results" class="section level1" number="5">
 <h1><span class="header-section-number">Chapter 5</span> Results</h1>
+<p>We will focus on visualizing the criteria that determine the “quality” of an user:</p>
+<ol style="list-style-type: decimal">
+<li><code>TweetUserDefaultProfilePic</code>: whether an user account uses default Twitter profile picture.</li>
+<li><code>TweetUserFollowRatio</code>: the ratio of the following count to the followers count of an user account.</li>
+<li><code>TweetUserVerified</code>: whether an user account is independently authenticated by the platform and is considered influential.</li>
+<li><code>TweetUserNumFavorites</code>: the number of favorites an user account has received.</li>
+<li><code>TweetUserDaysOn</code>: the number of days since an user account’s creation.</li>
+<li><code>Category</code>: the category of the word list that the tweet posted by an particular user fell into.</li>
+</ol>
+<p>First of all, all twitter users of the collected tweets use non-default profile picture for Twitter as shown by the following pie chart. Therefore, <code>TweetUserDefaultProfilePic</code> would not be a meaningful metrics to determine quality of an user for this particular sample data.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>It is also observed that duplicates exists in our collected sample. After dropping out entries with missing values of concern, we found that 3718 users posted multiple tweets and that 986 users posted tweets that fell into multiple categories of word lists. The following bar chart shows the distribution of tweets posted by users who posted multiple tweets. It can be observed that the number of tweets that falls into professional categories (“legal”, “medical”, “legal”) is significantly more than that of the other two categories.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>For avoiding future confusion, we drop the extraneous entries of any user, allowing only one tweet of a single category per user. Then, we use a parallel coordinate plot shown below to explore user characteristics from the given variables, highlighting those who used foul words in their tweets. It can be seen that the difference is not significantly large except for the verified status. Very few of users who used foul words is verified whereas at least a portion of users who didn’t use foul words is verified.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>The above find may suggest that verified status is a good indicator of the quality of an user. Thus, we went further to explore the distribution of categories of tweets posted by verified and non-verified users by using a faceted bar chart. It is evident that the percentage of non-verified users who tweeted foul words is higher than the percentage of those who did not. In fact, the “foul” category has the smallest percentage among verified users. This may suggest that influential users with a larger potential audience are more cautious with choices of words and are thus considered as “high quality”.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>In additional, we are interested in seeing whether features that implies popularity of an user on Twitter can define user quality. After eliminating outliers, we made boxplots of <code>TweetUserNumFavorites</code> and <code>TweetUserFollowRatio</code> over each category to visualize the distribution of data for each property.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-8-1.png" width="672" />
+<img src="finalproj_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>In both plots, categories are sorted in descending order by the median values. It can be observed that users who used foul words may have the lowest following/follower ratio and the second highest favorites count. However, such a claim is not well supported by the data as it can be seen that statistics for all five categories are close to each other and are not significantly different.</p>
+<p>Similar conclusion can be drawn from the below scatter plot showing relationship between <code>TweetUserFollowRatio</code> and <code>TweetUserNumFavorites</code>. Density of users who tweeted foul words seems to be higher on the lower end of values of <code>TweetUserFollowRatio</code>, weakly indicating higher popularity of those users.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+Finally, we look into distribution of <code>TweetUserDaysOn</code> over each category via a mosaic plot. After encoding the account length into different ranges, we can clearly see that the proportion of users who tweeted foul words decreases as the account length increases. This may indicate that users who are more experienced with using Twitter tend to be those of higher quality.</p>
+<p><img src="finalproj_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 
 </div>
             </section>

@@ -1,3 +1,196 @@
 # Results
 
+```{r include=FALSE}
+#Load necessary libraries
+library(jsonlite)
+library(tibble)
+library(dplyr)
+library(ggplot2)
+library(GGally)
+library(scales)
+```
+
+```{r}
+df <- as_tibble(read_json("./Data/allwords.json", simplifyVector = TRUE)) %>%
+  filter(!is.na(TweetUserFollowRatio)) %>% 
+  mutate(is_foul = ifelse(Category == "foul", TRUE, FALSE))
+```
+
+We will focus on visualizing the criteria that determine the "quality" of an user:
+
+1) `TweetUserDefaultProfilePic`: whether an user account uses default Twitter profile picture.
+2) `TweetUserFollowRatio`: the ratio of the following count to the followers count of an user account.
+3) `TweetUserVerified`: whether an user account is independently authenticated by the platform and is considered influential.
+4) `TweetUserNumFavorites`: the number of favorites an user account has received.
+5) `TweetUserDaysOn`: the number of days since an user account's creation.
+6) `Category`: the category of the word list that the tweet posted by an particular user fell into.
+
+First of all, all twitter users of the collected tweets use non-default profile picture for Twitter as shown by the following pie chart. Therefore, `TweetUserDefaultProfilePic` would not be a meaningful metrics to determine quality of an user for this particular sample data.
+
+```{r}
+n <- 60255
+pic <- df %>% 
+  group_by(TweetUserDefaultProfilePic) %>% 
+  summarise(percentage = n() / n)
+
+ggplot(pic, aes(x="", y=percentage, fill=TweetUserDefaultProfilePic)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_void() +
+  theme(legend.position = "right") +
+  ggtitle("Distribution of users with non-default profile picture") +
+  geom_text(aes(label = percent(percentage)), size=7, vjust = 4.5)
+```
+
+It is also observed that duplicates exists in our collected sample. After dropping out entries with missing values of concern, we found that 3718 users posted multiple tweets and that 986 users posted tweets that fell into multiple categories of word lists. The following bar chart shows the distribution of tweets posted by users who posted multiple tweets. It can be observed that the number of tweets that falls into professional categories ("legal", "medical", "legal") is significantly more than that of the other two categories.
+
+```{r}
+df_distinct <- df[!(duplicated(df$TweetId) | duplicated(df$TweetId, fromLast = TRUE)), ]
+
+# test2 <- df_distinct %>% # 986 users posts tweets in more than 1 category
+#   group_by(TweetUserScreenName) %>% 
+#   summarise(freq = length(unique(Category))) %>% 
+#   filter(freq > 1)
+
+user_cat_dup <- df_distinct %>% # 3718 users posted >1 tweets
+  group_by(TweetUserScreenName, Category) %>% 
+  summarise(freq = n()) %>% 
+  arrange(desc(freq)) %>% 
+  filter(freq > 1) 
+
+cat_dup <- user_cat_dup %>% 
+  group_by(Category) %>% 
+  summarise(Frequency = sum(freq))
+
+ggplot(cat_dup, aes(x = reorder(Category, -Frequency), y = Frequency)) + 
+  geom_bar(stat = "identity", position = "dodge", fill="cadetblue3") + 
+  ggtitle("Distribution of Categories of tweets posted by users who posted multiple tweets") +
+  labs(x = "Category", y = "Tweets count") +
+  theme_minimal()
+
+
+```
+
+For avoiding future confusion, we drop the extraneous entries of any user, allowing only one tweet of a single category per user. Then, we use a parallel coordinate plot shown below to explore user characteristics from the given variables, highlighting those who used foul words in their tweets. It can be seen that the difference is not significantly large except for the verified status. Very few of users who used foul words is verified whereas at least a portion of users who didn't use foul words is verified.
+
+```{r}
+df_distinct <- df_distinct %>% 
+  distinct(TweetUserScreenName, .keep_all = TRUE)
+
+pcp_foul <- df_distinct %>% 
+  select(TweetUserScreenName ,is_foul, TweetUserFollowRatio, TweetUserNumFavorites, TweetUserDaysOn, TweetUserVerified) %>% 
+  mutate(TweetUserVerified = ifelse(TweetUserVerified, 1, 0))
+
+ggparcoord(pcp_foul[order(pcp_foul$is_foul),], columns = 3:6, 
+           groupColumn = "is_foul",
+           title = "Highlighting user statistics of users who tweeted foul words",
+           alphaLines = 0.15, scale = "uniminmax") +
+  scale_color_manual(values=c("gray","maroon")) +
+  guides(color = guide_legend(override.aes = list(size=5, alpha=1)))
+
+```
+
+The above find may suggest that verified status is a good indicator of the quality of an user. Thus, we went further to explore the distribution of categories of tweets posted by verified and non-verified users by using a faceted bar chart. It is evident that the percentage of non-verified users who tweeted foul words is higher than the percentage of those who did not. In fact, the "foul" category has the smallest percentage among verified users. This may suggest that influential users with a larger potential audience are more cautious with choices of words and are thus considered as "high quality".
+
+```{r}
+bar_facet <- df_distinct %>% 
+  group_by(TweetUserVerified, Category) %>% 
+  summarise(Freq = n())
+
+n_1 <- sum(bar_facet[bar_facet$TweetUserVerified,]$Freq)
+n_0 <- sum(bar_facet[!bar_facet$TweetUserVerified,]$Freq)
+
+bar_facet <- bar_facet %>% 
+  mutate(percentage = ifelse(TweetUserVerified, percent(Freq / n_1), percent(Freq / n_0))) %>% 
+  arrange(percentage) %>% 
+  mutate(Category = factor(Category, levels = Category))
+
+ggplot(bar_facet, aes(x = Category, y = percentage, fill = Category)) +
+  geom_bar(stat = "identity", position = "dodge") + 
+  ggtitle("Comparison of distribution of categories of tweets posted by verified and non-verified users") +
+  scale_fill_brewer( palette = "YlGnBu" ) +
+  facet_wrap(~TweetUserVerified, labeller = as_labeller(c("FALSE"="Non-verified", "TRUE"="Verified"))) +
+  theme_minimal()
+```
+
+In additional, we are interested in seeing whether features that implies popularity of an user on Twitter can define user quality. After eliminating outliers, we made boxplots of `TweetUserNumFavorites` and `TweetUserFollowRatio` over each category to visualize the distribution of data for each property.
+
+```{r}
+box_ratio <- df_distinct %>%  
+  select(TweetUserNumFavorites, Category)
+
+# process outliers
+Q <- quantile(box_ratio$TweetUserNumFavorites, probs=c(.25, .75))
+iqr <- IQR(box_ratio$TweetUserNumFavorites)
+upper <- Q[2] + 1.5 * iqr
+lower <- Q[1] - 1.5 * iqr
+box_ratio <- subset(box_ratio, box_ratio$TweetUserNumFavorites > lower & box_ratio$TweetUserNumFavorites < upper)
+
+ggplot(box_ratio, aes(x = reorder(Category, -TweetUserNumFavorites, median), y = TweetUserNumFavorites)) +
+  geom_boxplot(fill = "#cc9a38", color = "#473e2c") +
+  ggtitle("Boxplot of TweetUserNumFavorites of users over Categories") +
+  labs(x = "Category", y = "User favorated count") + 
+  theme_minimal()
+```
+```{r}
+box_ratio_2 <- df_distinct %>%  
+  select(TweetUserFollowRatio, Category)
+
+# process outliers
+Q <- quantile(box_ratio_2$TweetUserFollowRatio, probs=c(.25, .75))
+iqr <- IQR(box_ratio_2$TweetUserFollowRatio)
+upper <- Q[2] + 1.5 * iqr
+lower <- Q[1] - 1.5 * iqr
+box_ratio_2 <- subset(box_ratio_2, box_ratio_2$TweetUserFollowRatio > lower & box_ratio_2$TweetUserFollowRatio < upper)
+
+ggplot(box_ratio_2, aes(x = reorder(Category, -TweetUserFollowRatio, median), y = TweetUserFollowRatio)) +
+  geom_boxplot(fill = "#cc9a38", color = "#473e2c") +
+  ggtitle("Boxplot of TweetUserFollowRatio of users over Categories") +
+  labs(x = "Category", y = "following/follower ratio") + 
+  theme_minimal()
+```
+
+In both plots, categories are sorted in descending order by the median values. It can be observed that users who used foul words may have the lowest following/follower ratio and the second highest favorites count. However, such a claim is not well supported by the data as it can be seen that statistics for all five categories are close to each other and are not significantly different.
+
+Similar conclusion can be drawn from the below scatter plot showing relationship between `TweetUserFollowRatio` and `TweetUserNumFavorites`. Density of users who tweeted foul words seems to be higher on the lower end of values of `TweetUserFollowRatio`, weakly indicating higher popularity of those users. 
+
+```{r}
+sct <- df_distinct %>% 
+  select(Category, TweetUserFollowRatio, TweetUserDaysOn, TweetUserNumFavorites)
+
+# process outliers
+Q <- quantile(sct$TweetUserFollowRatio, probs=c(.25, .75))
+iqr <- IQR(sct$TweetUserFollowRatio)
+upper <- Q[2] + 1.5 * iqr
+lower <- Q[1] - 1.5 * iqr
+sct <- subset(sct, sct$TweetUserFollowRatio > lower & sct$TweetUserFollowRatio < upper)
+
+Q <- quantile(sct$TweetUserNumFavorites, probs=c(.25, .75))
+iqr <- IQR(sct$TweetUserNumFavorites)
+upper <- Q[2] + 1.5 * iqr
+lower <- Q[1] - 1.5 * iqr
+sct <- subset(sct, sct$TweetUserNumFavorites > lower & sct$TweetUserNumFavorites < upper)
+
+ggplot(sct, aes(x = TweetUserFollowRatio, y = TweetUserNumFavorites)) +
+  geom_point(aes(color = Category), alpha = 0.2, position = "jitter") +
+  ggtitle("Number of favorites VS following/follower ratio for each category") +
+  guides(color = guide_legend(override.aes = list(size=5, alpha=1))) +
+  theme_minimal()
+```
+Finally, we look into distribution of `TweetUserDaysOn` over each category via a mosaic plot. After encoding the account length into different ranges, we can clearly see that the proportion of users who tweeted foul words decreases as the account length increases. This may indicate that users who are more experienced with using Twitter tend to be those of higher quality.
+
+```{r}
+day_on <- df_distinct %>% 
+  select(Category, TweetUserDaysOn) %>% 
+  mutate(Category = factor(Category, levels = c("foul", "astro", "hard", "legal", "medical"))) %>% 
+  mutate(acc_length_days = cut(TweetUserDaysOn, 
+                       breaks = c(0, 1000, 2000, 3000, 4000, Inf), 
+                       labels = c("<1k", "1k-2k", "2k-3k", "3k-4k", ">=4k"), 
+                       right = FALSE))
+
+vcd::mosaic(Category ~ acc_length_days, day_on,
+            highlighting_fill = c("#27408E", "#536CB5", 
+                                  "#7688BB", "#98A5C0", "#C0C6CB"),
+            labeling = vcd::labeling_border(rot_labels = c(0, 0, 0, 0)))
+```
 
