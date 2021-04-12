@@ -62,7 +62,7 @@ The game is based on [Mike Bostok's Collapsible Tree Example](https://gist.githu
 The question tree diagram is built by reading a JSON file server from a web site. The game is hosted on a web server and displayed in an IFRAME.
 
 
-<iframe src="http://localhost:3000/TwitVizTrivia.html" width="1000" height="900"></iframe>
+<iframe src="https://advanced-trading.com/edav/TwitVizTrivia.html" width="1000" height="900"></iframe>
 
 For reference, here are all the questions and answers in one image:
 
