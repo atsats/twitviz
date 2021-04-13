@@ -8,6 +8,7 @@ library(dplyr)
 library(ggplot2)
 library(GGally)
 library(scales)
+library(ggthemes)
 ```
 
 ```{r}
@@ -25,7 +26,7 @@ We will focus on visualizing the criteria that determine the "quality" of an use
 5) `TweetUserDaysOn`: the number of days since an user account's creation.
 6) `Category`: the category of the word list that the tweet posted by an particular user fell into.
 
-First of all, all twitter users of the collected tweets use non-default profile picture for Twitter as shown by the following pie chart. Therefore, `TweetUserDefaultProfilePic` would not be a meaningful metrics to determine quality of an user for this particular sample data.
+First of all, it was found that all twitter users of the collected tweets use non-default profile picture. Therefore, `TweetUserDefaultProfilePic` would not be a meaningful metrics to determine quality of an user for this particular sample data.
 
 ```{r}
 n <- 60255
@@ -33,13 +34,13 @@ pic <- df %>%
   group_by(TweetUserDefaultProfilePic) %>% 
   summarise(percentage = n() / n)
 
-ggplot(pic, aes(x="", y=percentage, fill=TweetUserDefaultProfilePic)) +
-  geom_bar(stat="identity", width=1) +
-  coord_polar("y", start=0) +
-  theme_void() +
-  theme(legend.position = "right") +
-  ggtitle("Distribution of users with non-default profile picture") +
-  geom_text(aes(label = percent(percentage)), size=7, vjust = 4.5)
+# ggplot(pic, aes(x="", y=percentage, fill=TweetUserDefaultProfilePic)) +
+#   geom_bar(stat="identity", width=1) +
+#   coord_polar("y", start=0) +
+#   theme_void() +
+#   theme(legend.position = "right") +
+#   ggtitle("Distribution of users with non-default profile picture") +
+#   geom_text(aes(label = percent(percentage)), size=7, vjust = 4.5)
 ```
 
 It is also observed that duplicates exists in our collected sample. After dropping out entries with missing values of concern, we found that 3718 users posted multiple tweets and that 986 users posted tweets that fell into multiple categories of word lists. The following bar chart shows the distribution of tweets posted by users who posted multiple tweets. It can be observed that the number of tweets that falls into professional categories ("legal", "medical", "legal") is significantly more than that of the other two categories.
@@ -63,10 +64,10 @@ cat_dup <- user_cat_dup %>%
   summarise(Frequency = sum(freq))
 
 ggplot(cat_dup, aes(x = reorder(Category, -Frequency), y = Frequency)) + 
-  geom_bar(stat = "identity", position = "dodge", fill="cadetblue3") + 
+  geom_bar(stat = "identity", color="black", position = "dodge", fill="cadetblue3") + 
   ggtitle("Distribution of Categories of tweets posted by users who posted multiple tweets") +
   labs(x = "Category", y = "Tweets count") +
-  theme_minimal()
+  theme_economist()
 
 
 ```
@@ -102,7 +103,7 @@ n_0 <- sum(bar_facet[!bar_facet$TweetUserVerified,]$Freq)
 
 bar_facet <- bar_facet %>% 
   mutate(percentage = ifelse(TweetUserVerified, percent(Freq / n_1), percent(Freq / n_0))) %>% 
-  arrange(percentage) %>% 
+  arrange(desc(percentage)) %>% 
   mutate(Category = factor(Category, levels = Category))
 
 ggplot(bar_facet, aes(x = Category, y = percentage, fill = Category)) +
@@ -110,7 +111,7 @@ ggplot(bar_facet, aes(x = Category, y = percentage, fill = Category)) +
   ggtitle("Comparison of distribution of categories of tweets posted by verified and non-verified users") +
   scale_fill_brewer( palette = "YlGnBu" ) +
   facet_wrap(~TweetUserVerified, labeller = as_labeller(c("FALSE"="Non-verified", "TRUE"="Verified"))) +
-  theme_minimal()
+  theme_economist()
 ```
 
 In additional, we are interested in seeing whether features that implies popularity of an user on Twitter can define user quality. After eliminating outliers, we made boxplots of `TweetUserNumFavorites` and `TweetUserFollowRatio` over each category to visualize the distribution of data for each property.
@@ -129,7 +130,7 @@ box_ratio <- subset(box_ratio, box_ratio$TweetUserNumFavorites > lower & box_rat
 ggplot(box_ratio, aes(x = reorder(Category, -TweetUserNumFavorites, median), y = TweetUserNumFavorites)) +
   geom_boxplot(fill = "#cc9a38", color = "#473e2c") +
   ggtitle("Boxplot of TweetUserNumFavorites of users over Categories") +
-  labs(x = "Category", y = "User favorated count") + 
+  labs(x = "Category", y = "User favorited count") + 
   theme_minimal()
 ```
 ```{r}
