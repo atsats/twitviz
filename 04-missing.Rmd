@@ -7,6 +7,7 @@ require(tibble)
 require(dplyr)
 require(ggplot2)
 require(GGally)
+require(ggthemes)
 ```
 
 Upon checking the number of missing values in each column in the parsed data frame, we found that most missing values occur to either irrelevant attributes of the tweets (such as coordinate data) or those information about retweets and the corresponding users (such as `ReTweetUserScreenName`).
@@ -27,9 +28,8 @@ missing_col <- df[is.na(df$TweetUserFollowRatio),] %>%
   mutate(TweetUserVerified = ifelse(TweetUserVerified, 1, 0))
 
 ggparcoord(missing_col, columns = 1:6, order = c(1,2,5,4,3,6),
-           # groupColumn = "ratio_missing", 
            alphaLines = 0.5, scale = "uniminmax",
-           title = "Missing values in TweetUserFollowRatio with respect to other user-related variables") +
+           title = "statistics for users with missnig TweetUserFollowRatio") +
   coord_flip()
   
 df <- df %>%
@@ -47,6 +47,7 @@ no_follower <- no_follower %>%
   mutate(Category = factor(Category, levels = Category))
   
 ggplot(no_follower, aes(Category, count)) +
-  geom_bar(stat = "identity") +
-  ggtitle("Number of users with no follower per category")
+  geom_bar(fill="cadetblue3",color="black", stat="identity") +
+  ggtitle("Number of users with no follower per category") + 
+  theme_economist()
 ```
